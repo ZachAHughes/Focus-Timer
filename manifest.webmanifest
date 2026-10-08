@@ -1,0 +1,12 @@
+{
+  "name": "Focus — Pomodoro Timer",
+  "short_name": "Focus",
+  "description": "A minimalist pomodoro timer with ambient sounds and a daily task list.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f5f2",
+  "theme_color": "#e0603f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

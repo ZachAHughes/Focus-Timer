@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Focus</title>
+  <meta name="description" content="A minimalist pomodoro timer with ambient sounds and a daily task list.">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#131315" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-mode="focus">
+  <main class="app">
+    <header class="top">
+      <span class="brand">Focus</span>
+      <button id="settingsBtn" class="icon-btn" aria-label="Settings" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </header>
+
+    <nav class="modes" role="tablist" aria-label="Timer mode">
+      <button role="tab" data-mode="focus">Focus</button>
+      <button role="tab" data-mode="short">Short break</button>
+      <button role="tab" data-mode="long">Long break</button>
+    </nav>
+
+    <section class="timer" aria-label="Timer">
+      <div class="ring">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <circle class="track" cx="100" cy="100" r="92"/>
+          <circle class="progress" id="progress" cx="100" cy="100" r="92"/>
+        </svg>
+        <div class="readout">
+          <div id="time" class="time" role="timer" aria-live="off">25:00</div>
+          <div id="label" class="label">Session 1 of 4</div>
+        </div>
+      </div>
+      <div id="current" class="current-task"></div>
+      <div class="controls">
+        <button id="resetBtn" class="icon-btn" aria-label="Reset" title="Reset (R)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg>
+        </button>
+        <button id="startBtn" class="primary">Start</button>
+        <button id="skipBtn" class="icon-btn" aria-label="Skip to next" title="Skip (S)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5l10 7-10 7z"/><path d="M19 5v14"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="ambientHead">
+      <div class="card-head">
+        <h2 id="ambientHead">Ambient</h2>
+        <input id="volume" type="range" min="0" max="1" step="0.01" aria-label="Ambient volume">
+      </div>
+      <div id="sounds" class="chips"></div>
+      <p id="ambientHint" class="muted hint-line">Plays only while a focus session is running.</p>
+    </section>
+
+    <section class="card" aria-labelledby="tasksHead">
+      <div class="card-head">
+        <h2 id="tasksHead">Today</h2>
+        <span id="stats" class="muted"></span>
+      </div>
+      <form id="taskForm" autocomplete="off">
+        <input id="taskInput" class="task-input" placeholder="Add a task and press Enter" maxlength="200" aria-label="New task">
+      </form>
+      <button id="carryBtn" class="link" hidden></button>
+      <ul id="taskList"></ul>
+      <div class="tasks-foot">
+        <span class="muted">Tap a task to focus on it</span>
+        <button id="clearDone" class="link" hidden>Clear completed</button>
+      </div>
+    </section>
+
+    <footer class="hint">Space start/pause · R reset · S skip · 1 2 3 switch mode</footer>
+  </main>
+
+  <dialog id="settings" aria-labelledby="settingsHead">
+    <form id="settingsForm" method="dialog">
+      <h2 id="settingsHead" class="dialog-title">Settings</h2>
+      <div class="field-grid">
+        <label class="num">Focus (min)<input name="focus" type="number" min="1" max="180" inputmode="numeric"></label>
+        <label class="num">Short break<input name="short" type="number" min="1" max="60" inputmode="numeric"></label>
+        <label class="num">Long break<input name="long" type="number" min="1" max="90" inputmode="numeric"></label>
+        <label class="num">Long break every<input name="longEvery" type="number" min="2" max="12" inputmode="numeric"></label>
+      </div>
+      <label class="toggle">Auto-start breaks<input name="autoBreak" type="checkbox"></label>
+      <label class="toggle">Auto-start focus after a break<input name="autoFocus" type="checkbox"></label>
+      <label class="toggle">Ambient sound only during focus<input name="ambientOnlyFocus" type="checkbox"></label>
+      <label class="toggle">Chime when a session ends<input name="chime" type="checkbox"></label>
+      <label class="toggle">Desktop notifications<input name="notify" type="checkbox"></label>
+      <div class="dialog-foot"><button class="primary small" value="close">Done</button></div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
